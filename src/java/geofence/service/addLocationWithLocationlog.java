@@ -43,9 +43,9 @@ public class addLocationWithLocationlog extends HttpServlet
         Map<String, Object> map = Utils.getRequestObject(request);
         System.out.println(map);
 
-         LocationLog l= new LocationLog((int)map.get("userid"),((Number)map.get("longitude")).floatValue(),((Number)map.get("latitude")).floatValue(),(String)map.get("triggeredstatus"));
+        LocationLog l = new LocationLog((int) map.get("userid"), ((Number) map.get("longitude")).floatValue(), ((Number) map.get("latitude")).floatValue(), (String) map.get("triggeredstatus"));
         Map<String, Object> responseMap = new HashMap<>();
-        long n=DBManager.addlocation(l);
+        long n = DBManager.addlocation(l);
         if (n != -1)
         {
             responseMap.put("status", "success");
