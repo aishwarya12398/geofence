@@ -40,7 +40,13 @@ public class DBManager
 
     public static Connection getConnection() throws SQLException
     {
-        return DriverManager.getConnection(CON_STRING, USERNAME, PASSWORD);
+        try
+        {
+            return DriverManager.getConnection(CON_STRING, USERNAME, PASSWORD);
+        } catch (Exception e)
+        {
+            return DriverManager.getConnection(CON_STRING, USERNAME, "root");
+        }
     }
 
     static public long addUser(User u)
