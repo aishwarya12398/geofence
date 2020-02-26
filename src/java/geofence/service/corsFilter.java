@@ -29,18 +29,18 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class corsFilter implements Filter
 {
-    
+
     private static final boolean debug = true;
 
     // The filter configuration object we are associated with.  If
     // this value is null, this filter instance is not currently
     // configured. 
     private FilterConfig filterConfig = null;
-    
+
     public corsFilter()
     {
-    }    
-    
+    }
+
     private void doBeforeProcessing(ServletRequest request, ServletResponse response)
             throws IOException, ServletException
     {
@@ -69,8 +69,8 @@ public class corsFilter implements Filter
 	    log(buf.toString());
 	}
          */
-    }    
-    
+    }
+
     private void doAfterProcessing(ServletRequest request, ServletResponse response)
             throws IOException, ServletException
     {
@@ -111,19 +111,26 @@ public class corsFilter implements Filter
             FilterChain chain)
             throws IOException, ServletException
     {
-        
+
         if (debug)
         {
             log("corsFilter:doFilter()");
         }
-        
-        if(request instanceof HttpServletRequest)
+
+//        if (request instanceof HttpServletRequest)
+//        {
+//            if (((HttpServletRequest) request).getMethod().equalsIgnoreCase("options"))
+//            {
+//                Utils.writeOption((HttpServletResponse) response);
+//                return;
+//            }
+//        }
+        if (response instanceof HttpServletResponse)
         {
-         if(((HttpServletRequest)request).getMethod().equalsIgnoreCase("options"))
-        {
-            Utils.writeOption((HttpServletResponse)response);
-            return;
-        }
+            HttpServletResponse res = (HttpServletResponse) response;
+            res.addHeader("Access-Control-Allow-Origin", "*");
+            res.addHeader("Access-Control-Allow-Headers", "*");
+            res.addHeader("Access-Control-Allow-Methods", "*");
         }
         Throwable problem = null;
         try
@@ -137,8 +144,6 @@ public class corsFilter implements Filter
             problem = t;
             t.printStackTrace();
         }
-        
-        
 
         // If there was a problem, we want to rethrow it if it is
         // a known type, otherwise log it.
@@ -178,19 +183,19 @@ public class corsFilter implements Filter
      * Destroy method for this filter
      */
     public void destroy()
-    {        
+    {
     }
 
     /**
      * Init method for this filter
      */
     public void init(FilterConfig filterConfig)
-    {        
+    {
         this.filterConfig = filterConfig;
         if (filterConfig != null)
         {
             if (debug)
-            {                
+            {
                 log("corsFilter:Initializing filter");
             }
         }
@@ -211,23 +216,23 @@ public class corsFilter implements Filter
         sb.append(")");
         return (sb.toString());
     }
-    
+
     private void sendProcessingError(Throwable t, ServletResponse response)
     {
-        String stackTrace = getStackTrace(t);        
-        
+        String stackTrace = getStackTrace(t);
+
         if (stackTrace != null && !stackTrace.equals(""))
         {
             try
             {
                 response.setContentType("text/html");
                 PrintStream ps = new PrintStream(response.getOutputStream());
-                PrintWriter pw = new PrintWriter(ps);                
+                PrintWriter pw = new PrintWriter(ps);
                 pw.print("<html>\n<head>\n<title>Error</title>\n</head>\n<body>\n"); //NOI18N
 
                 // PENDING! Localize this for next official release
-                pw.print("<h1>The resource did not process correctly</h1>\n<pre>\n");                
-                pw.print(stackTrace);                
+                pw.print("<h1>The resource did not process correctly</h1>\n<pre>\n");
+                pw.print(stackTrace);
                 pw.print("</pre></body>\n</html>"); //NOI18N
                 pw.close();
                 ps.close();
@@ -248,7 +253,7 @@ public class corsFilter implements Filter
             }
         }
     }
-    
+
     public static String getStackTrace(Throwable t)
     {
         String stackTrace = null;
@@ -265,10 +270,10 @@ public class corsFilter implements Filter
         }
         return stackTrace;
     }
-    
+
     public void log(String msg)
     {
-        filterConfig.getServletContext().log(msg);        
+        filterConfig.getServletContext().log(msg);
     }
-    
+
 }
