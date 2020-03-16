@@ -316,10 +316,11 @@ public class DBManager
     public static void addToken(int userid, String token)
     {
         try (Connection con = getConnection();
-                PreparedStatement ps = con.prepareStatement("insert ignore into token values (?,?)"))
+                PreparedStatement ps = con.prepareStatement("insert into token values (?,?) on duplicate key update token=?"))
         {
             ps.setInt(1, userid);
             ps.setString(2, token);
+            ps.setString(3, token);
 
             ps.executeUpdate();
 

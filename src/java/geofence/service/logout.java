@@ -52,6 +52,7 @@ public class logout extends HttpServlet
             responseMap.put("status", "failed");
         }
         //String password = (String) map.get("password");
+         Utils.writeResponse(response, responseMap);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

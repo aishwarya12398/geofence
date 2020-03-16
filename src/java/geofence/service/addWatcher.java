@@ -43,10 +43,11 @@ public class addWatcher extends HttpServlet
     {
 
         Map<String, Object> map = Utils.getRequestObject(request);
+        if(map.size()==0) return;
         System.out.println(map);
 
         String token = (String) map.get("token");
-        int userid = Integer.parseInt((String) map.get("userid"));
+        int userid = ((Integer) map.get("userid"));
 
         Map<String, Object> responseMap = new HashMap<>();
         if (token == null || !DBManager.verifyToken(userid, token))
