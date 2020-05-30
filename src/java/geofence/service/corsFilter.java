@@ -128,14 +128,21 @@ public class corsFilter implements Filter
         if (response instanceof HttpServletResponse)
         {
             HttpServletResponse res = (HttpServletResponse) response;
-            res.addHeader("Access-Control-Allow-Origin", "*");
-            res.addHeader("Access-Control-Allow-Headers", "*");
-            res.addHeader("Access-Control-Allow-Methods", "*");
+            res.setHeader("Access-Control-Allow-Origin", "*");
+            res.setHeader("Access-Control-Allow-Headers", "*");
+            res.setHeader("Access-Control-Allow-Methods", "*");
         }
         Throwable problem = null;
         try
         {
             chain.doFilter(request, response);
+            if (response instanceof HttpServletResponse)
+            {
+                HttpServletResponse res = (HttpServletResponse) response;
+                res.setHeader("Access-Control-Allow-Origin", "*");
+                res.setHeader("Access-Control-Allow-Headers", "*");
+                res.setHeader("Access-Control-Allow-Methods", "*");
+            }
         } catch (Throwable t)
         {
             // If an exception is thrown somewhere down the filter chain,

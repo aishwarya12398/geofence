@@ -1,0 +1,15 @@
+To do:
+
+1.Code in android to fetch current location
+.
+2.Acces that information in ionic
+.
+3. quantization is completed and .txt files have been created just have to store it into fence table
+.
+4.Displaying maps about history of user to watcher 
+.
+5.In view watcher after clicking on remove button watcher should be removed from list.
+6.we have performed some form validations but they aren't working i.e. the record should not be inserted in table if some data in form is missing or not entered by user.
+
+7. sending SMS/email to watcher if user goes out of the geofence.
+8.while executing remotely addwatchers is not working properly.
