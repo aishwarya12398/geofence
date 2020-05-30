@@ -23,25 +23,25 @@ import javax.servlet.http.HttpServletResponse;
 public class Utils
 {
 
-    private static final SimpleDateFormat sdf=new SimpleDateFormat("d/M/y");
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("d/M/y");
     private static Object LocationLog;
-    
-    public static Map<String,Object> getRequestObject(HttpServletRequest request)
+
+    public static Map<String, Object> getRequestObject(HttpServletRequest request)
     {
         try
         {
-        String body=Utils.readRequestBody(request);
-        System.out.println(body);
-        
-        Map<String, Object> map = JSON.std.mapFrom(body);
-        return map;
-        }
-        catch(Exception e)
+            String body = Utils.readRequestBody(request);
+            System.out.println(body);
+
+            Map<String, Object> map = JSON.std.mapFrom(body);
+            return map;
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
         return new HashMap<>();
     }
+
     public static String readRequestBody(HttpServletRequest request)
     {
         try
@@ -64,7 +64,7 @@ public class Utils
         return "{}";
     }
 
-    public static void writeResponse(HttpServletResponse response, Map<String,Object> responseMap)
+    public static void writeResponse(HttpServletResponse response, Map<String, Object> responseMap)
     {
         try
         {
@@ -74,8 +74,8 @@ public class Utils
 
             response.setContentType("text/plain-text");
 
-            String json=JSON.std.asString(responseMap);
-            PrintWriter pw=response.getWriter();
+            String json = JSON.std.asString(responseMap);
+            PrintWriter pw = response.getWriter();
             pw.println(json);
             pw.flush();
             pw.close();
@@ -84,7 +84,8 @@ public class Utils
             e.printStackTrace();
         }
     }
-     public static void writeOption(HttpServletResponse response)
+
+    public static void writeOption(HttpServletResponse response)
     {
         try
         {
@@ -94,8 +95,7 @@ public class Utils
 
             response.setContentType("text/plain-text");
 
-            
-            PrintWriter pw=response.getWriter();
+            PrintWriter pw = response.getWriter();
             pw.println();
             pw.flush();
             pw.close();
@@ -104,18 +104,17 @@ public class Utils
             e.printStackTrace();
         }
     }
-    
+
     public static Date parseDate(String datestr)
     {
         try
         {
-        
-        return sdf.parse(datestr);
+
+            return sdf.parse(datestr);
+        } catch (Exception e)
+        {
+            LocationLog = null;
         }
-        catch(Exception e)
-         {
-                    LocationLog  =null;
-          }
-                return null;
+        return null;
     }
 }

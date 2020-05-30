@@ -38,6 +38,7 @@ public class logout extends HttpServlet
     protected void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
+        if(request.getMethod().equals("OPTIONS")) return;
         Map<String, Object> map = Utils.getRequestObject(request);
         System.out.println(map);
         int userid = (int) map.get("userid");
@@ -52,6 +53,9 @@ public class logout extends HttpServlet
             responseMap.put("status", "failed");
         }
         //String password = (String) map.get("password");
+        //write responseMap to response
+        Utils.writeResponse(response, responseMap);
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
