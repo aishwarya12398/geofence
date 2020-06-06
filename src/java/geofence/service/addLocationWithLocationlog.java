@@ -6,7 +6,9 @@
 package geofence.service;
 
 import geofence.DBManager;
+import geofence.Email;
 import geofence.LocationLog;
+import geofence.Watcher;
 import java.io.IOException;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
@@ -62,6 +64,11 @@ public class addLocationWithLocationlog extends HttpServlet
         if (checkBrokenFence(fences, userid, longitude, latitude))
         {
             //send message to watchers
+            List<Watcher> watchers=DBManager.getWatchers(userid);
+            for(Watcher w:watchers)
+            {
+                Email.sendEmail(w.getEmail(), "Subject", "Email message");
+            }
         }
 
         if (n != -1)
