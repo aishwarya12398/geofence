@@ -9,6 +9,8 @@ import geofence.DBManager;
 import geofence.LocationLog;
 import java.io.IOException;
 import java.sql.Time;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -115,19 +117,94 @@ public class addLocationWithLocationlog extends HttpServlet
         return "Short description";
     }// </editor-fold>
 
-    private boolean checkBrokenFence(List<String> fences, int userid, float longitude, float latitude)
+    private static boolean checkBrokenFence(List<String> fences, int userid, float longitude, float latitude)
     {
-        Calendar c = Calendar.getInstance();
-        c.set(Calendar.MINUTE, c.get(Calendar.MINUTE) / 15 * 15);
-        c.set(Calendar.SECOND, 0);
-        c.set(Calendar.MILLISECOND, 0);
+        try
+        {
+            Calendar c = Calendar.getInstance();
+            c.set(Calendar.MINUTE, c.get(Calendar.MINUTE) / 15 * 15);
+            c.set(Calendar.SECOND, 0);
+            c.set(Calendar.MILLISECOND, 0);
 
-        int day = c.get(Calendar.DAY_OF_WEEK);
-        Time t = new Time(c.getTimeInMillis());
-        float qlong = ((int) (longitude / 0.005f)) * 0.005f;
-        float qlat = ((int) (latitude / 0.005f)) * 0.005f;
-        
+            int day = c.get(Calendar.DAY_OF_WEEK);
+            int date = c.get(Calendar.DAY_OF_MONTH);
+            Time t = new Time(c.getTimeInMillis());
+            float qlong = ((int) (longitude / 0.005f)) * 0.005f;
+            float qlat = ((int) (latitude / 0.005f)) * 0.005f;
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+
+            for (String fence : fences)
+            {
+                String[] tokens = fence.split("[,=\\s]+");
+                int count = 0;
+                int match = 0;
+
+                float flong=0;
+                float flat=0;
+                
+                for (int i = 0; i < tokens.length - 1; i += 2)
+                {
+                    String rule = tokens[i];
+                    if (rule.equals("DATE"))
+                    {
+                        int fd = Integer.parseInt(tokens[i + 1]);
+                        if (fd == date)
+                        {
+                            match++;
+                        }
+                        count++;
+                    } else if (rule.equals("DAY"))
+                    {
+                        int fd = Integer.parseInt(tokens[i + 1]);
+                        if (fd == day)
+                        {
+                            match++;
+                        }
+                        count++;
+                    } else if (rule.equals("TIME"))
+                    {
+                        Calendar tt = Calendar.getInstance();
+                        tt.setTime(sdf.parse(tokens[i + 1]));
+                        Time ft = new Time(tt.getTimeInMillis());
+                        if (ft.equals(t))
+                        {
+                            match++;
+                        }
+                        count++;
+                    }
+                    else if(rule.equals("LONG"))
+                    {
+                        flong=Float.parseFloat(tokens[i+1]);
+                    }
+                    else if(rule.equals("LAT"))
+                    {
+                        flat=Float.parseFloat(tokens[i+1]);
+                    }
+                }
+                if(match==count)
+                {
+                    if(Math.abs(qlong-flong)<0.0001 && Math.abs(qlat-flat)<0.0001)
+                    {
+                        
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
         return false;
     }
 
+    public static void main(String[] args)
+    {
+        String fence = "DATE=29               209";
+        String[] tokens = fence.split("[,=\\s]+");
+        System.out.println(Arrays.toString(tokens));
+
+    }
 }
