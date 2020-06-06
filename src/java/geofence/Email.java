@@ -37,7 +37,7 @@ public class Email
         {
             protected PasswordAuthentication getPasswordAuthentication()
             {
-                return new PasswordAuthentication("cipherxen@gmail.com", "checkxen2");
+                return new PasswordAuthentication("", "");
             }
         });
         //compose message    
