@@ -117,7 +117,7 @@ public class DataQuantizer
 
     public static void generateDataset()
     {
-         int threshold = 1;
+        int threshold = 1;
         File folder = new File("dataset");
         if (!folder.exists())
         {
@@ -135,6 +135,8 @@ public class DataQuantizer
                 System.out.println("userid = " + userid);
                 try (Connection conn = getConnection();
                         PreparedStatement ps1 = conn.prepareStatement("select * from qlocationlog where userid=" + userid);
+                        PreparedStatement ps2 = conn.prepareStatement("delete from fence where userid=?");
+                        PreparedStatement ps3 = conn.prepareStatement("insert into fence values (0,?,?)");
                         ResultSet rs1 = ps1.executeQuery();
                         PrintWriter pw = new PrintWriter(new File(folder, userid + ".csv")))
 
@@ -151,11 +153,22 @@ public class DataQuantizer
                         pw.println(str);
                     }
                     pw.close();
-                    new FPGrowth(new File(folder, userid + ".csv"), threshold,userid+".txt");
-                    File file=new File(userid+".txt");
-                    BufferedReader br=new BufferedReader(new FileReader(file));
+                    new FPGrowth(new File(folder, userid + ".csv"), threshold, userid + ".txt");
+                    File file = new File(userid + ".txt");
+                    BufferedReader br = new BufferedReader(new FileReader(file));
                     String st;
                     String str[];
+
+                    ps2.setInt(1, userid);
+                    ps2.executeUpdate();
+
+                    ps3.setInt(1, userid);
+                    while ((st = br.readLine()) != null)
+                    {
+                        ps3.setString(2, st);
+                        ps3.executeUpdate();
+                    }
+
 //                    while((st=br.readLine())!=null)
 //                    {
 //                        str=st.split(",");
@@ -179,7 +192,6 @@ public class DataQuantizer
 //                         
 //                        }
 //                    }
-                    
                 } catch (Exception e)
                 {
                     e.printStackTrace();

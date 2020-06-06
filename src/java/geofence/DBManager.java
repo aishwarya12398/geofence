@@ -373,4 +373,28 @@ public class DBManager
         return false;
     }
 
+    public static List<String> getFences(int userid)
+    {
+        List<String> list = new ArrayList<>();
+        try (Connection con = getConnection();
+                PreparedStatement ps = con.prepareStatement("select * from fence where userid=?"))
+        {
+            ps.setInt(1, userid);
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next())
+            {
+                String fence = rs.getString(3);
+                list.add(fence);
+            }
+            rs.close();
+
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
 }

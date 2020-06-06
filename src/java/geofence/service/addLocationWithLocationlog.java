@@ -8,8 +8,10 @@ package geofence.service;
 import geofence.DBManager;
 import geofence.LocationLog;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.sql.Time;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -28,6 +30,8 @@ import javax.servlet.http.HttpServletResponse;
 public class addLocationWithLocationlog extends HttpServlet
 {
 
+    private Map<Integer, Long> lastSentMap = new HashMap<>();
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -42,10 +46,22 @@ public class addLocationWithLocationlog extends HttpServlet
     {
         Map<String, Object> map = Utils.getRequestObject(request);
         System.out.println(map);
+        final int userid = (int) map.get("userid");
+        final float longitude = ((Number) map.get("longitude")).floatValue();
+        final float latitude = ((Number) map.get("latitude")).floatValue();
+        final String triggeredStatus = (String) map.get("triggeredstatus");
 
-        LocationLog l = new LocationLog((int) map.get("userid"), ((Number) map.get("longitude")).floatValue(), ((Number) map.get("latitude")).floatValue(), (String) map.get("triggeredstatus"));
+        LocationLog l = new LocationLog(userid, longitude, latitude, triggeredStatus);
         Map<String, Object> responseMap = new HashMap<>();
         long n = DBManager.addlocation(l);
+
+        List<String> fences = DBManager.getFences(userid);
+
+        if (checkBrokenFence(fences, userid, longitude, latitude))
+        {
+            //send message to watchers
+        }
+
         if (n != -1)
         {
             responseMap.put("status", "success");
@@ -53,7 +69,6 @@ public class addLocationWithLocationlog extends HttpServlet
         } else
         {
             responseMap.put("status", "failed");
-
         }
         Utils.writeResponse(response, responseMap);
     }
@@ -99,5 +114,20 @@ public class addLocationWithLocationlog extends HttpServlet
     {
         return "Short description";
     }// </editor-fold>
+
+    private boolean checkBrokenFence(List<String> fences, int userid, float longitude, float latitude)
+    {
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.MINUTE, c.get(Calendar.MINUTE) / 15 * 15);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
+
+        int day = c.get(Calendar.DAY_OF_WEEK);
+        Time t = new Time(c.getTimeInMillis());
+        float qlong = ((int) (longitude / 0.005f)) * 0.005f;
+        float qlat = ((int) (latitude / 0.005f)) * 0.005f;
+        
+        return false;
+    }
 
 }
