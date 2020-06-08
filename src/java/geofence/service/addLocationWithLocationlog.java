@@ -60,17 +60,24 @@ public class addLocationWithLocationlog extends HttpServlet
         Map<String, Object> responseMap = new HashMap<>();
         long n = DBManager.addlocation(l);
 
-        List<String> fences = DBManager.getFences(userid);
+        long time = System.currentTimeMillis();
+        Long lastsent = lastSentMap.getOrDefault(userid, 0L);
 
-        if (checkBrokenFence(fences, userid, longitude, latitude))
+        if ((time - lastsent) > 15 * 60 * 1000)
         {
-            User u=DBManager.getUser(userid);
-            //send message to watchers
-            List<Watcher> watchers=DBManager.getWatchers(userid);
-            for(Watcher w:watchers)
+            List<String> fences = DBManager.getFences(userid);
+
+            if (checkBrokenFence(fences, userid, longitude, latitude))
             {
-                Email.sendEmail(w.getEmail(), "Alert!", u.getUsername()+" is out of expected location. and location is "+latitude+","+longitude+"\n"
-                        + "https://maps.google.com/search?q="+latitude+","+longitude);
+                User u = DBManager.getUser(userid);
+                //send message to watchers
+                List<Watcher> watchers = DBManager.getWatchers(userid);
+                for (Watcher w : watchers)
+                {
+                    Email.sendEmail(w.getEmail(), "Alert!", u.getUsername() + " is out of expected location. and location is " + latitude + "," + longitude + "\n"
+                            + "https://maps.google.com/search?q=" + latitude + "," + longitude);
+                }
+                lastSentMap.put(userid,time);
             }
         }
 
@@ -149,9 +156,9 @@ public class addLocationWithLocationlog extends HttpServlet
                 int count = 0;
                 int match = 0;
 
-                float flong=0;
-                float flat=0;
-                
+                float flong = 0;
+                float flat = 0;
+
                 for (int i = 0; i < tokens.length - 1; i += 2)
                 {
                     String rule = tokens[i];
@@ -181,23 +188,20 @@ public class addLocationWithLocationlog extends HttpServlet
                             match++;
                         }
                         count++;
-                    }
-                    else if(rule.equals("LONG"))
+                    } else if (rule.equals("LONG"))
                     {
-                        flong=Float.parseFloat(tokens[i+1]);
-                    }
-                    else if(rule.equals("LAT"))
+                        flong = Float.parseFloat(tokens[i + 1]);
+                    } else if (rule.equals("LAT"))
                     {
-                        flat=Float.parseFloat(tokens[i+1]);
+                        flat = Float.parseFloat(tokens[i + 1]);
                     }
                 }
-                if(match==count)
+                if (match == count)
                 {
-                    if(Math.abs(qlong-flong)<0.0001 && Math.abs(qlat-flat)<0.0001)
+                    if (Math.abs(qlong - flong) < 0.0001 && Math.abs(qlat - flat) < 0.0001)
                     {
-                        
-                    }
-                    else
+
+                    } else
                     {
                         return true;
                     }
