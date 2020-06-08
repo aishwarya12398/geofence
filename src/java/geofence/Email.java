@@ -37,7 +37,7 @@ public class Email
         {
             protected PasswordAuthentication getPasswordAuthentication()
             {
-                return new PasswordAuthentication("", "");
+                return new PasswordAuthentication("aishwaryatele98@gmail.com", "geofence");
             }
         });
         //compose message    
@@ -57,6 +57,6 @@ public class Email
     }
     public static void main(String[] args)
     {
-        sendEmail("cipherxen@gmail.com", "Hello", "Hello world");
+        sendEmail("aishwaryatele98@gmail.com", "Hello", "Hello world");
     }
 }

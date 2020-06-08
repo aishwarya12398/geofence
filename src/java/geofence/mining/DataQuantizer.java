@@ -40,6 +40,7 @@ public class DataQuantizer
         try
         {
             Class.forName("com.mysql.jdbc.Driver");
+
         } catch (ClassNotFoundException ex)
         {
         }
@@ -165,8 +166,11 @@ public class DataQuantizer
                     ps3.setInt(1, userid);
                     while ((st = br.readLine()) != null)
                     {
-                        ps3.setString(2, st);
-                        ps3.executeUpdate();
+                        if (st.contains("LONG") && st.contains("LAT"))
+                        {
+                            ps3.setString(2, st);
+                            ps3.executeUpdate();
+                        }
                     }
 
 //                    while((st=br.readLine())!=null)

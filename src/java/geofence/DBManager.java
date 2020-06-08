@@ -213,13 +213,16 @@ public class DBManager
 
     }
 
-    static public int removeWatcher(int watcherid)
+    static public int removeWatcher(String watchername,int userid)
     {
 
         try (Connection con = getConnection();
-                PreparedStatement ps = con.prepareStatement("Update watcher w Set active=0 where w.watcherid=" + watcherid))
+                //PreparedStatement ps = con.prepareStatement("Update watcher w Set active=0 where w.name=" + watchername))
+                PreparedStatement ps = con.prepareStatement("delete from watcher where name=? and userid=?"))
         {
-            ps.execute();
+            ps.setString(1, watchername);
+            ps.setInt(2, userid);
+            ps.executeUpdate();
             return 1;
 
         } catch (Exception e)

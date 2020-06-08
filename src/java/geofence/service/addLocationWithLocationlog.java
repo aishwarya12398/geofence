@@ -8,6 +8,7 @@ package geofence.service;
 import geofence.DBManager;
 import geofence.Email;
 import geofence.LocationLog;
+import geofence.User;
 import geofence.Watcher;
 import java.io.IOException;
 import java.sql.Time;
@@ -63,11 +64,13 @@ public class addLocationWithLocationlog extends HttpServlet
 
         if (checkBrokenFence(fences, userid, longitude, latitude))
         {
+            User u=DBManager.getUser(userid);
             //send message to watchers
             List<Watcher> watchers=DBManager.getWatchers(userid);
             for(Watcher w:watchers)
             {
-                Email.sendEmail(w.getEmail(), "Subject", "Email message");
+                Email.sendEmail(w.getEmail(), "Alert!", u.getUsername()+" is out of expected location. and location is "+latitude+","+longitude+"\n"
+                        + "https://maps.google.com/search?q="+latitude+","+longitude);
             }
         }
 
@@ -142,7 +145,7 @@ public class addLocationWithLocationlog extends HttpServlet
 
             for (String fence : fences)
             {
-                String[] tokens = fence.split("[,=\\s]+");
+                String[] tokens = fence.split("[,=\\s\\t]+");
                 int count = 0;
                 int match = 0;
 
@@ -196,7 +199,7 @@ public class addLocationWithLocationlog extends HttpServlet
                     }
                     else
                     {
-                        return false;
+                        return true;
                     }
                 }
             }

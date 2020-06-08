@@ -44,11 +44,11 @@ public class removeWatcher extends HttpServlet
          Map<String, Object> map = Utils.getRequestObject(request);
         System.out.println(map);
 
-        int watcherid = (int) map.get("watcherid");
-
+        String watchername =  (String) map.get("watchername");
+         int userid=(int)map.get("userid");
         Map<String, Object> responseMap = new HashMap<>();
 
-        int l = DBManager.removeWatcher(watcherid);
+        int l = DBManager.removeWatcher(watchername,userid);
         if (l ==1)
         {
             responseMap.put("status", "success");
@@ -71,8 +71,7 @@ public class removeWatcher extends HttpServlet
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         processRequest(request, response);
     }
